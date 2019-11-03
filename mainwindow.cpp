@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "QDialog"
 #include "dialog.h"
 #include "math.h"
 
@@ -34,7 +33,7 @@ Calculatrice::Calculatrice(QWidget *parent) :
     connect(ui->pushButton_plusmoins,SIGNAL(clicked(bool)),this,SLOT(plusmoins_percent()));
     connect(ui->pushButton_percent,SIGNAL(clicked(bool)),this,SLOT(plusmoins_percent()));
 
-    connect(ui->action_About,SIGNAL(clicked(bool)),this,SLOT(affiche_dialog()));
+    connect(ui->action_About,SIGNAL(triggered(bool)),this,SLOT(affiche_dialog()));
 
     ui->pushButton_plus->setCheckable(true);
     ui->pushButton_moins->setCheckable(true);
@@ -46,8 +45,8 @@ Calculatrice::Calculatrice(QWidget *parent) :
 
 void Calculatrice::affiche_dialog()
 {
-    QDialog *dialog=new QDialog(this);
-    dialog->show();
+    Dialog dialog(this);
+    dialog.exec();
 
 }
 
