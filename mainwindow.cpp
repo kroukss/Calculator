@@ -1,125 +1,178 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "qdebug.h"
+#include "QDialog"
+#include "dialog.h"
+#include "math.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+Calculatrice::Calculatrice(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::Calculatrice)
 {
     ui->setupUi(this);
-    connect(ui->pushButton_0,SIGNAL(clicked(bool)),this,SLOT(affiche_0()));
-    connect(ui->pushButton_1,SIGNAL(clicked(bool)),this,SLOT(affiche_1()));
-    connect(ui->pushButton_2,SIGNAL(clicked(bool)),this,SLOT(affiche_2()));
-    connect(ui->pushButton_3,SIGNAL(clicked(bool)),this,SLOT(affiche_3()));
-    connect(ui->pushButton_4,SIGNAL(clicked(bool)),this,SLOT(affiche_4()));
-    connect(ui->pushButton_5,SIGNAL(clicked(bool)),this,SLOT(affiche_5()));
-    connect(ui->pushButton_6,SIGNAL(clicked(bool)),this,SLOT(affiche_6()));
-    connect(ui->pushButton_7,SIGNAL(clicked(bool)),this,SLOT(affiche_7()));
-    connect(ui->pushButton_8,SIGNAL(clicked(bool)),this,SLOT(affiche_8()));
-    connect(ui->pushButton_9,SIGNAL(clicked(bool)),this,SLOT(affiche_9()));
-    connect(ui->pushButton_plus,SIGNAL(clicked(bool)),this,SLOT(affiche_plus()));
-    connect(ui->pushButton_moins,SIGNAL(clicked(bool)),this,SLOT(affiche_moins()));
-    connect(ui->pushButton_egal,SIGNAL(clicked(bool)),this,SLOT(affiche_egal()));
+    connect(ui->pushButton_0,SIGNAL(clicked(bool)),this,SLOT(affiche_nombre()));
+    connect(ui->pushButton_1,SIGNAL(clicked(bool)),this,SLOT(affiche_nombre()));
+    connect(ui->pushButton_2,SIGNAL(clicked(bool)),this,SLOT(affiche_nombre()));
+    connect(ui->pushButton_3,SIGNAL(clicked(bool)),this,SLOT(affiche_nombre()));
+    connect(ui->pushButton_4,SIGNAL(clicked(bool)),this,SLOT(affiche_nombre()));
+    connect(ui->pushButton_5,SIGNAL(clicked(bool)),this,SLOT(affiche_nombre()));
+    connect(ui->pushButton_6,SIGNAL(clicked(bool)),this,SLOT(affiche_nombre()));
+    connect(ui->pushButton_7,SIGNAL(clicked(bool)),this,SLOT(affiche_nombre()));
+    connect(ui->pushButton_8,SIGNAL(clicked(bool)),this,SLOT(affiche_nombre()));
+    connect(ui->pushButton_9,SIGNAL(clicked(bool)),this,SLOT(affiche_nombre()));
+
+    connect(ui->pushButton_plus,SIGNAL(clicked(bool)),this,SLOT(operation()));
+    connect(ui->pushButton_moins,SIGNAL(clicked(bool)),this,SLOT(operation()));
+    connect(ui->pushButton_division,SIGNAL(clicked(bool)),this,SLOT(operation()));
+    connect(ui->pushButton_multiplication,SIGNAL(clicked(bool)),this,SLOT(operation()));
+    connect(ui->pushButton_pow,SIGNAL(clicked(bool)),this,SLOT(operation()));
+    connect(ui->pushButton_racine,SIGNAL(clicked(bool)),this,SLOT(operation()));
+
+    connect(ui->pushButton_egal,SIGNAL(clicked(bool)),this,SLOT(egal()));
+    connect(ui->pushButton_virgule,SIGNAL(clicked(bool)),this,SLOT(virgule()));
     connect(ui->pushButton_clear,SIGNAL(clicked(bool)),this,SLOT(clear()));
+
+    connect(ui->pushButton_plusmoins,SIGNAL(clicked(bool)),this,SLOT(plusmoins_percent()));
+    connect(ui->pushButton_percent,SIGNAL(clicked(bool)),this,SLOT(plusmoins_percent()));
+
+    connect(ui->action_About,SIGNAL(clicked(bool)),this,SLOT(affiche_dialog()));
+
+    ui->pushButton_plus->setCheckable(true);
+    ui->pushButton_moins->setCheckable(true);
+    ui->pushButton_multiplication->setCheckable(true);
+    ui->pushButton_division->setCheckable(true);
+    ui->pushButton_pow->setCheckable(true);
+    ui->pushButton_racine->setCheckable(true);
 }
 
-void MainWindow::affiche_0()
+void Calculatrice::affiche_dialog()
 {
+    QDialog *dialog=new QDialog(this);
+    dialog->show();
+
+}
+
+void Calculatrice::affiche_nombre()
+{
+    QPushButton * button = (QPushButton *) sender();
+    double num;
     QString n;
-    n=QString("%1").arg(0);
+
+    num= button->text().toDouble();
+    n=QString::number(num,'g',15);
     ui->textEdit->insertPlainText(n);
 }
 
-void MainWindow::affiche_1()
+
+void Calculatrice::plusmoins_percent()
+{
+    QPushButton * button = (QPushButton *)sender();
+    double num;
+    QString n;
+
+    if(button->text() == "+/-")
+    {
+        num=ui->textEdit->toPlainText().toDouble();
+        num=num* -1;
+        n=QString::number(num,'g',15);
+        ui->textEdit->clear();
+        ui->textEdit->insertPlainText(n);
+    }
+
+    if(button->text() == "%")
+    {
+        num=ui->textEdit->toPlainText().toDouble();
+        num=num* 0.01;
+        n=QString::number(num,'g',15);
+        ui->textEdit->clear();
+        ui->textEdit->insertPlainText(n);
+    }
+}
+
+void Calculatrice::operation()
+{
+   QPushButton * button = (QPushButton *)sender();
+
+   pnum=ui->textEdit->toPlainText().toDouble();
+   button->setChecked(true);
+   ui->textEdit->clear();
+}
+
+void Calculatrice::virgule()
 {
     QString n;
-    n=QString("%1").arg(1);
+    n=QString("%1").arg(virg);
     ui->textEdit->insertPlainText(n);
 }
 
-void MainWindow::affiche_2()
+void Calculatrice::egal()
 {
-    QString n;
-    n=QString("%1").arg(2);
-    ui->textEdit->insertPlainText(n);
+    QString nouvn;
+    double num,nums;
+
+    nums=ui->textEdit->toPlainText().toDouble();
+    ui->textEdit->clear();
+
+    if(ui->pushButton_plus->isChecked())
+    {
+       num = pnum + nums;
+       nouvn=nouvn.number(num);
+       ui->textEdit->clear();
+       ui->textEdit->insertPlainText(nouvn);
+       ui->pushButton_plus->setChecked(false);
+    }
+
+    if(ui->pushButton_moins->isChecked())
+    {
+        num = pnum - nums;
+        nouvn=nouvn.number(num);
+        ui->textEdit->clear();
+        ui->textEdit->insertPlainText(nouvn);
+        ui->pushButton_moins->setChecked(false);
+    }
+
+    if(ui->pushButton_multiplication->isChecked())
+    {
+        num = pnum * nums;
+        nouvn=nouvn.number(num);
+        ui->textEdit->clear();
+        ui->textEdit->insertPlainText(nouvn);
+        ui->pushButton_multiplication->setChecked(false);
+    }
+
+    if(ui->pushButton_division->isChecked())
+    {
+        num = pnum / nums;
+        nouvn=nouvn.number(num);
+        ui->textEdit->clear();
+        ui->textEdit->insertPlainText(nouvn);
+        ui->pushButton_division->setChecked(false);
+    }
+
+    if(ui->pushButton_pow->isChecked())
+    {
+        num = pow(pnum,nums);
+        nouvn=nouvn.number(num);
+        ui->textEdit->clear();
+        ui->textEdit->insertPlainText(nouvn);
+        ui->pushButton_pow->setChecked(false);
+    }
+
+    if(ui->pushButton_racine->isChecked())
+    {
+        num = sqrt(nums);
+        nouvn=nouvn.number(num);
+        ui->textEdit->clear();
+        ui->textEdit->insertPlainText(nouvn);
+        ui->pushButton_racine->setChecked(false);
+    }
 }
 
-void MainWindow::affiche_3()
+void Calculatrice::clear()
 {
-    QString n;
-    n=QString("%1").arg(3);
-    ui->textEdit->insertPlainText(n);
-}
-
-void MainWindow::affiche_4()
-{
-    QString n;
-    n=QString("%1").arg(4);
-    ui->textEdit->insertPlainText(n);
-}
-
-void MainWindow::affiche_5()
-{
-    QString n;
-    n=QString("%1").arg(5);
-    ui->textEdit->insertPlainText(n);
-}
-
-void MainWindow::affiche_6()
-{
-    QString n;
-    n=QString("%1").arg(6);
-    ui->textEdit->insertPlainText(n);
-}
-void MainWindow::affiche_7()
-{
-    QString n;
-    n=QString("%1").arg(7);
-    ui->textEdit->insertPlainText(n);
-}
-
-void MainWindow::affiche_8()
-{
-    QString n;
-    n=QString("%1").arg(8);
-    ui->textEdit->insertPlainText(n);
-}
-
-void MainWindow::affiche_9()
-{
-    QString n;
-    n=QString("%1").arg(9);
-    ui->textEdit->insertPlainText(n);
-}
-
-void MainWindow::affiche_plus()
-{
-    int i=ui->textEdit->toPlainText().toInt();
     ui->textEdit->clear();
 }
 
-void MainWindow::affiche_moins()
-{
-    int i=ui->textEdit->toPlainText().toInt();
-    ui->textEdit->clear();
-}
-
-void MainWindow::affiche_egal()
-{
-    QString n;
-    n=ui->textEdit->toPlainText();
-    i=i+n.toFloat();
-    qDebug()<<i;
-  //ui->textEdit->insertPlainText(i);
-    ui->textEdit->clear();
-}
-
-void MainWindow::clear()
-{
-    ui->textEdit->clear();
-}
-
-MainWindow::~MainWindow()
+Calculatrice::~Calculatrice()
 {
     delete ui;
 }
